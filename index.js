@@ -13,24 +13,39 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/', async (req, res) => {
-  const newUser = await prisma.user.create({ data: req.body });
-  res.json(newUser);
+  try {
+    const newUser = await prisma.user.create({ data: req.body });
+    console.log(newUser);
+    res.json(newUser);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while creating the user.' });
+  }
 });
 
 app.put('/:id', async (req, res) => {
   const id = req.params.id;
   const newFirstName = req.body.firstName;
-  const updatedUser = await prisma.user.update({
-    where: { id: parseInt(id) },
-    data: { firstName: newFirstName },
-  });
-  res.json(updatedUser);
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: id },
+      data: { firstName: newFirstName },
+    });
+    res.json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while updating the user.' });
+  }
 });
 
 app.delete('/:id', async (req, res) => {
   const id = req.params.id;
   const deletedUser = await prisma.user.delete({
-    where: { id: parseInt(id) },
+    where: { id: id },
   });
   res.json(deletedUser);
 });

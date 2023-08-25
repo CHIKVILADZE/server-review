@@ -14,14 +14,15 @@ model User {
   email     String
   password  String
   createdAt DateTime @default(now())
-  Post      Post[]
+  isAdmin   Boolean  @default(false)
+  postOwned Post[]   @relation("PostOwner")
 }
 
 model Post {
-  id          String   @id @default(uuid())
-  author      User     @relation(fields: [authorId], references: [id])
-  authorId    String
-  title       String
-  description String
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  title     String
+  author    User     @relation("PostOwner", fields: [authorId], references: [id])
+  authorId  String
+  desc      String
+  createdAt DateTime @default(now())
 }
