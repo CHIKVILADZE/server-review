@@ -1,28 +1,29 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+datasource db{
+    provider = "mysql"
+    url = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String
-  password  String
-  createdAt DateTime @default(now())
-  isAdmin   Boolean  @default(false)
-  postOwned Post[]   @relation("PostOwner")
+model User{
+    id String @id @default(uuid())
+    firstName String
+    lastName String
+    email String
+    password String
+    createdAt DateTime @default(now())
+    isAdmin Boolean @default(false)
+    postOwned Post[] @relation("PostOwner")
 }
 
-model Post {
-  id        String   @id @default(uuid())
-  title     String
-  author    User     @relation("PostOwner", fields: [authorId], references: [id])
-  authorId  String
-  desc      String
-  createdAt DateTime @default(now())
+
+model Post{
+    id String @id @default(uuid())
+    title String
+    author User @relation("PostOwner", fields: [authorId], references: [id])
+    authorId String
+    desc String
+    createdAt DateTime @default(now())
 }

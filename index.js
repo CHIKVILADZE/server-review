@@ -50,6 +50,29 @@ app.delete('/:id', async (req, res) => {
   res.json(deletedUser);
 });
 
+app.post('/post', async (req, res) => {
+  try {
+    const newPost = await prisma.post.create({ data: req.body });
+    console.log(newPost);
+    res.json(newPost);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while creating the post.' });
+    console.log(error);
+  }
+});
+
+app.get('/post', async (req, res) => {
+  const allPosts = await prisma.post.findMany({
+    include: {
+      author: true,
+    },
+  });
+  res.json(allPosts);
+});
+
 app.listen(4000, () => {
   console.log('Server is listening on port 4000');
 });
