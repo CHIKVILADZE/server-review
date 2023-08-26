@@ -73,6 +73,29 @@ app.get('/post', async (req, res) => {
   res.json(allPosts);
 });
 
+app.post('/comment', async (req, res) => {
+  try {
+    const newComment = await prisma.comment.create({ data: req.body });
+    console.log(newComment);
+    res.json(newComment);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while creating the post.' });
+    console.log(error);
+  }
+});
+
+app.get('/comment', async (req, res) => {
+  const allComment = await prisma.comment.findMany({
+    include: {
+      post: true,
+    },
+  });
+  res.json(allComment);
+});
+
 app.listen(4000, () => {
   console.log('Server is listening on port 4000');
 });
