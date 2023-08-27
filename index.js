@@ -7,6 +7,8 @@ import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';
 import likeRoutes from './routes/likes.js';
 import authRoutes from './routes/auth.js';
+import dotenv from 'dotenv';
+dotenv.config();
 const app = express();
 
 const prisma = new PrismaClient();
@@ -71,29 +73,6 @@ app.delete('/:id', async (req, res) => {
     where: { id: id },
   });
   res.json(deletedUser);
-});
-
-app.post('/post', async (req, res) => {
-  try {
-    const newPost = await prisma.post.create({ data: req.body });
-    console.log(newPost);
-    res.json(newPost);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while creating the post.' });
-    console.log(error);
-  }
-});
-
-app.get('/post', async (req, res) => {
-  const allPosts = await prisma.post.findMany({
-    include: {
-      author: true,
-    },
-  });
-  res.json(allPosts);
 });
 
 app.post('/comment', async (req, res) => {
