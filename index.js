@@ -20,14 +20,6 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// app.use(
-//   cookieSession({
-//     name: 'session',
-//     keys: ['Giorgi'],
-//     maxAge: 24 * 60 * 60 * 100,
-//   })
-// );
-
 app.use(
   session({
     secret: process.env.SECRET_KEY,
@@ -49,41 +41,12 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Credentials', true);
-//   next();
-// });
-
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/auth', googleAuthRoutes);
-// app.use('/profile', profileRoutes);
-
-// GOOGLE AUTH ROUTES
-
-// app.get(
-//   '/google',
-//   passport.authenticate('google', {
-//     scope: ['profile', 'email'],
-//   })
-// );
-
-// app.get(
-//   '/google/callback',
-//   passport.authenticate('/auth/google', {
-//     successRedirect: process.env.CLIENT_URL,
-//     failureRedirect: '/login/failed',
-//   }),
-//   (req, res) => {
-//     // Successful authentication, redirect to a page or send a response
-//     res.redirect('/dashboard');
-//   }
-// );
-
-/// USUAL ROUTES
 
 app.get('/', async (req, res) => {
   const allUsers = await prisma.user.findMany();
