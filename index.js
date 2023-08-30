@@ -2,35 +2,88 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import session from 'express-session'; // Import express-session
 import userRoutes from './routes/users.js';
 import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';
 import likeRoutes from './routes/likes.js';
 import authRoutes from './routes/auth.js';
+import googleAuthRoutes from './routes/googleAuth.js';
+import profileRoutes from './routes/profile-route.js';
 import dotenv from 'dotenv';
+import cookieSession from 'cookie-session';
+import passport from 'passport';
+import passportSetup from './passport-setup.js';
+
 dotenv.config();
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
+
+// app.use(
+//   cookieSession({
+//     name: 'session',
+//     keys: ['Giorgi'],
+//     maxAge: 24 * 60 * 60 * 100,
+//   })
+// );
+
+app.use(
+  session({
+    secret: process.env.SECRET_KEY,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 const prisma = new PrismaClient();
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
-
-app.use(express.json());
 app.use(
   cors({
     origin: 'http://localhost:3000',
+    methods: 'GET, POST, PUT, DELETE',
+    credentials: true,
   })
 );
-app.use(cookieParser());
+
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Credentials', true);
+//   next();
+// });
 
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/auth', googleAuthRoutes);
+// app.use('/profile', profileRoutes);
+
+// GOOGLE AUTH ROUTES
+
+// app.get(
+//   '/google',
+//   passport.authenticate('google', {
+//     scope: ['profile', 'email'],
+//   })
+// );
+
+// app.get(
+//   '/google/callback',
+//   passport.authenticate('/auth/google', {
+//     successRedirect: process.env.CLIENT_URL,
+//     failureRedirect: '/login/failed',
+//   }),
+//   (req, res) => {
+//     // Successful authentication, redirect to a page or send a response
+//     res.redirect('/dashboard');
+//   }
+// );
+
+/// USUAL ROUTES
 
 app.get('/', async (req, res) => {
   const allUsers = await prisma.user.findMany();
