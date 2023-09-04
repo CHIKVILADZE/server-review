@@ -10,7 +10,30 @@ export const getPosts = async (req, res) => {
     },
   });
   res.json(allPosts);
-  console.log();
+};
+
+export const getPostById = async (req, res) => {
+  const postId = req.params.id; // Assuming you pass the post ID in the request parameters
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: {
+        author: true,
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json('Post not found!');
+    }
+
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
 };
 
 export const addPost = async (req, res) => {
@@ -27,7 +50,7 @@ export const addPost = async (req, res) => {
       const newPost = await prisma.post.create({
         data: {
           title: req.body.title,
-          author: { connect: { id: decodedToken.id } },
+          authorId: decodedToken.id,
           desc: req.body.desc,
         },
       });

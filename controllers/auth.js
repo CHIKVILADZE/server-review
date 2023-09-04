@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 const prisma = new PrismaClient();
 
 export const register = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, authMethod } = req.body;
 
   try {
     const existingUser = await prisma.user.findFirst({
@@ -29,6 +29,7 @@ export const register = async (req, res) => {
         lastName: lastName,
         email: email,
         password: hashedPassword,
+        authMethod: authMethod,
       },
     });
 
@@ -52,28 +53,28 @@ export const login = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'User not found!' });
+      return res.status(401).send('User not found!');
     }
 
     const passwordMatch = bcrypt.compareSync(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Invalid email or password.' });
+      return res.status(401).send('Invalid email or password.');
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
 
-    const { password: _, ...userData } = user;
+    const { password: _, ...others } = user;
 
     res
       .cookie('accessToken', token, {
         httpOnly: true,
       })
       .status(200)
-      .json(userData);
+      .send(others);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while logging in.' });
+    res.status(500).send('An error occurred while logging in.');
   }
 };
 

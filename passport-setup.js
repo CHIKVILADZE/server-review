@@ -2,13 +2,13 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { PrismaClient } from '@prisma/client';
 import { Strategy as GitHubStrategy } from 'passport-github2';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
-
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await prisma.user.findUnique({
@@ -20,7 +20,7 @@ passport.deserializeUser(async (id, done) => {
     if (user) {
       done(null, user);
     } else {
-      done(new Error('User not found'));
+      done(null, false);
     }
   } catch (error) {
     done(error);
@@ -54,10 +54,11 @@ passport.use(
           lastName: profile.name.familyName,
           email: 'google-email',
           password: 'google-auth',
+          authMethod: 'google',
         },
       });
-      console.log(newUser);
-      return done(null, newUser);
+      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET);
+      return done(null, newUser, token);
     }
   )
 );
@@ -68,7 +69,7 @@ passport.use(
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       callbackURL: '/auth/github/callback',
-      // scope: ['profile'],
+      scope: ['profile'],
     },
 
     async (accessToken, refreshToken, profile, done) => {
@@ -89,11 +90,13 @@ passport.use(
 
           email: 'github-email',
           password: 'github-auth',
+          authMethod: 'github',
         },
       });
-      console.log(newUser);
-      return done(null, newUser);
+      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET);
+      return done(null, newUser, token);
     }
   )
 );
+
 export default passport;
