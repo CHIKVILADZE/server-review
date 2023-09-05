@@ -33,6 +33,38 @@ export const getComments = async (req, res) => {
   }
 };
 
+export const getCommentById = async (req, res) => {
+  const commentId = req.params.id;
+
+  try {
+    const comment = await prisma.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+      select: {
+        id: true,
+        text: true,
+        createdAt: true,
+        author: {
+          select: {
+            id: true,
+            // profilePic: true,
+          },
+        },
+      },
+    });
+
+    if (!comment) {
+      return res.status(404).json('Comment not found');
+    }
+
+    return res.status(200).json(comment);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
+};
+
 export const addComment = async (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json('Not logged in!');

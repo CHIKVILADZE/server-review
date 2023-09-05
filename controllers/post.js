@@ -13,7 +13,7 @@ export const getPosts = async (req, res) => {
 };
 
 export const getPostById = async (req, res) => {
-  const postId = req.params.id; // Assuming you pass the post ID in the request parameters
+  const postId = req.params.id;
 
   try {
     const post = await prisma.post.findUnique({
