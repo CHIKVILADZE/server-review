@@ -5,11 +5,9 @@ const prisma = new PrismaClient();
 
 export const getLikes = async (req, res) => {
   try {
-    const postId = req.query.postId;
-
     const likes = await prisma.like.findMany({
       where: {
-        postId: postId,
+        postId: req.query.postId,
       },
       select: {
         id: true,
@@ -17,10 +15,10 @@ export const getLikes = async (req, res) => {
       },
     });
 
-    const likeIds = likes.map((like) => like.id);
     const userIds = likes.map((like) => like.userId);
+    const likeIds = likes.map((like) => like.id);
 
-    return res.status(200).json({ postId, likeIds, userIds });
+    return res.status(200).json({ postId: req.query.postId, userIds, likeIds });
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
@@ -81,7 +79,7 @@ export const deleteLike = async (req, res) => {
       },
     });
 
-    return res.status(200).json('Post has been disliked.');
+    return res.status(200).json(req.body);
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
