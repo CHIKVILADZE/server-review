@@ -1,48 +1,49 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url = env("DATABASE_URL")
 }
 
 model User {
-  id         String    @id @default(uuid())
-  firstName  String
-  lastName   String?
-  email      String?
-  password   String?
-  googleId   String?   @unique
-  githubId   String?   @unique
-  authMethod String
-  createdAt  DateTime  @default(now())
-  isAdmin    Boolean   @default(false)
-  posts      Post[]    @relation("PostOwner")
-  comments   Comment[] @relation("CommentAuthor")
-  Like       Like[]
+    id        String   @id @default(uuid())
+    firstName String
+    lastName  String?
+    email     String?
+    password  String? 
+    googleId  String?   @unique
+    githubId  String?    @unique
+    authMethod String
+    createdAt DateTime @default(now())
+    isAdmin   Boolean  @default(false)
+    posts     Post[]   @relation("PostOwner")
+    comments  Comment[] @relation("CommentAuthor")
+    Like       Like[]
 }
 
 model Post {
-  id        String    @id @default(uuid())
-  title     String
-  author    User      @relation("PostOwner", fields: [authorId], references: [id])
-  authorId  String
-  desc      String
-  createdAt DateTime  @default(now())
-  comments  Comment[] @relation("PostComments")
-  Like      Like[]
+    id        String   @id @default(uuid())
+    title     String
+    author    User     @relation("PostOwner", fields: [authorId], references: [id])
+    authorId  String
+    desc      String
+    createdAt DateTime @default(now())
+    comments  Comment[] @relation("PostComments")
+    Like       Like[]
 }
 
 model Comment {
-  id        String   @id @default(uuid())
-  text      String
-  author    User     @relation("CommentAuthor", fields: [authorId], references: [id])
-  authorId  String
-  post      Post     @relation("PostComments", fields: [postId], references: [id])
-  postId    String
-  createdAt DateTime @default(now())
+    id        String   @id @default(uuid())
+    text      String
+    author    User     @relation("CommentAuthor", fields: [authorId], references: [id])
+    authorId  String
+    post      Post     @relation("PostComments", fields: [postId], references: [id])
+    postId    String
+    createdAt DateTime @default(now())
 }
+
 
 model Like {
   id        String   @id @default(uuid())

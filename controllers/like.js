@@ -5,17 +5,43 @@ const prisma = new PrismaClient();
 
 export const getLikes = async (req, res) => {
   try {
+    const postId = req.query.postId;
+
     const likes = await prisma.like.findMany({
       where: {
-        postId: req.query.postId,
+        postId: postId,
       },
       select: {
+        id: true,
         userId: true,
       },
     });
 
+    const likeIds = likes.map((like) => like.id);
     const userIds = likes.map((like) => like.userId);
-    return res.status(200).json(userIds);
+
+    return res.status(200).json({ postId, likeIds, userIds });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
+};
+
+export const getLikeById = async (req, res) => {
+  const { likeId } = req.params;
+
+  try {
+    const like = await prisma.like.findUnique({
+      where: {
+        id: likeId,
+      },
+    });
+
+    if (!like) {
+      return res.status(404).json('Like not found');
+    }
+
+    return res.status(200).json(like);
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
@@ -44,26 +70,20 @@ export const addLike = async (req, res) => {
     }
   });
 };
-
 export const deleteLike = async (req, res) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json('Not logged in!');
+  try {
+    const { userId, postId } = req.body;
 
-  jwt.verify(token, 'secretkey', async (err, userInfo) => {
-    if (err) return res.status(403).json('Token is not valid!');
+    await prisma.like.deleteMany({
+      where: {
+        userId: userId,
+        postId: postId,
+      },
+    });
 
-    try {
-      await prisma.like.deleteMany({
-        where: {
-          userId: userInfo.id,
-          postId: req.query.postId,
-        },
-      });
-
-      return res.status(200).json('Post has been disliked.');
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json(error);
-    }
-  });
+    return res.status(200).json('Post has been disliked.');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
 };
