@@ -2,7 +2,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import session from 'express-session'; // Import express-session
+import session from 'express-session';
 import userRoutes from './routes/users.js';
 import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';

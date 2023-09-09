@@ -29,6 +29,7 @@ model Post {
     author    User     @relation("PostOwner", fields: [authorId], references: [id])
     authorId  String
     desc      String
+    image     String?  
     createdAt DateTime @default(now())
     comments  Comment[] @relation("PostComments")
     Like       Like[]

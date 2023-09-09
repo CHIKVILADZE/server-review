@@ -52,6 +52,7 @@ export const addPost = async (req, res) => {
           title: req.body.title,
           authorId: decodedToken.id,
           desc: req.body.desc,
+          image: req.file.filename,
         },
       });
 
