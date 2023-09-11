@@ -17,6 +17,7 @@ export const getComments = async (req, res) => {
         id: true,
         text: true,
         createdAt: true,
+        postId: true,
         author: {
           select: {
             id: true,
@@ -45,6 +46,7 @@ export const getCommentById = async (req, res) => {
         id: true,
         text: true,
         createdAt: true,
+        postId: true,
         author: {
           select: {
             id: true,
