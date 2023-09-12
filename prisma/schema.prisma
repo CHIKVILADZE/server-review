@@ -21,6 +21,8 @@ model User {
     posts     Post[]   @relation("PostOwner")
     comments  Comment[] @relation("CommentAuthor")
     Like       Like[]
+    review   Review[]  @relation("ReviewAuthor")
+
 }
 
 model Post {
@@ -33,7 +35,7 @@ model Post {
     createdAt DateTime @default(now())
     comments  Comment[] @relation("PostComments")
     Like       Like[]
-    review   Review[] 
+    review   Review[]  @relation("PostReview")
 
 }
 
@@ -61,8 +63,11 @@ model Like {
 model Review {
   id        String   @id @default(uuid())
   name      String  
-  rating    Int      
+  rating    Int     
+  author    User     @relation("ReviewAuthor", fields: [authorId], references: [id])
+  authorId  String
+  post      Post     @relation("PostReview", fields: [postId], references: [id])
+  postId    String 
   createdAt DateTime @default(now())
-  postId    String   
-  post      Post     @relation(fields: [postId], references: [id])
+
 }
