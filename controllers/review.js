@@ -1,34 +1,74 @@
 import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
 export const addReview = async (req, res) => {
-  const postId = req.body.postId; // Assuming you send postId in the request body
+  const token = req.cookies.accessToken;
+  if (!token) return res.status(401).json('Not logged in!');
 
-  try {
-    const review = await prisma.review.create({
-      data: {
-        post: {
-          connect: { id: postId }, // Use the PostWhereUniqueInput object
+  jwt.verify(token, 'secretkey', async (err, user) => {
+    if (err) return res.status(403).json('Token is not valid!');
+
+    try {
+      const newReview = await prisma.review.create({
+        data: {
+          name: req.body.name,
+          rating: req.body.rating,
+          author: {
+            connect: {
+              id: user.id,
+            },
+          },
+          post: {
+            connect: {
+              id: req.body.postId,
+            },
+          },
         },
-        name: req.body.name,
-        rating: parseInt(req.body.rating), // Parse the rating to an integer
-      },
-    });
+      });
 
-    res.status(200).send(review);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error creating review');
-  }
+      return res.status(200).json('Review has been created.');
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json(error);
+    }
+  });
 };
 
 export const getAllReviews = async (req, res) => {
   try {
-    const reviews = await prisma.review.findMany();
-    res.status(200).send(reviews);
+    const reviews = await prisma.review.findMany({
+      where: {
+        postId: req.query.postId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        name: true,
+        rating: true,
+        createdAt: true,
+        post: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+    console.log('reviews', reviews);
+    return res.status(200).json(reviews);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error fetching reviews');
+    return res.status(500).json(error);
   }
 };
