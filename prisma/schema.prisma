@@ -33,6 +33,8 @@ model Post {
     createdAt DateTime @default(now())
     comments  Comment[] @relation("PostComments")
     Like       Like[]
+    review   Review[] 
+
 }
 
 model Comment {
@@ -53,4 +55,14 @@ model Like {
   user      User     @relation(fields: [userId], references: [id])
   userId    String
   createdAt DateTime @default(now())
+}
+
+
+model Review {
+  id        String   @id @default(uuid())
+  name      String  
+  rating    Int      
+  createdAt DateTime @default(now())
+  postId    String   
+  post      Post     @relation(fields: [postId], references: [id])
 }

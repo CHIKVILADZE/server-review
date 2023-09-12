@@ -9,6 +9,7 @@ import commentRoutes from './routes/comments.js';
 import likeRoutes from './routes/likes.js';
 import authRoutes from './routes/auth.js';
 import googleAuthRoutes from './routes/googleAuth.js';
+import reviewRoutes from './routes/reviews.js';
 import dotenv from 'dotenv';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
@@ -46,6 +47,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/auth', googleAuthRoutes);
 
 app.listen(4000, () => {
