@@ -8,6 +8,9 @@ import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';
 import likeRoutes from './routes/likes.js';
 import authRoutes from './routes/auth.js';
+import movieRoutes from './routes/movies.js';
+import bookRoutes from './routes/books.js';
+import gameRoutes from './routes/games.js';
 import googleAuthRoutes from './routes/googleAuth.js';
 import reviewRoutes from './routes/reviews.js';
 import dotenv from 'dotenv';
@@ -49,6 +52,9 @@ app.use('/api/likes', likeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/auth', googleAuthRoutes);
+app.use('/api/movies', movieRoutes);
+app.use('/api/books', bookRoutes);
+app.use('/api/games', gameRoutes);
 
 app.listen(4000, () => {
   console.log('Server is listening on port 4000');

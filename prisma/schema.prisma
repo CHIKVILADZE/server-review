@@ -1,54 +1,104 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id        String   @id @default(uuid())
-    firstName String
-    lastName  String?
-    email     String?
-    password  String? 
-    googleId  String?   @unique
-    githubId  String?    @unique
-    authMethod String
-    createdAt DateTime @default(now())
-    isAdmin   Boolean  @default(false)
-    posts     Post[]   @relation("PostOwner")
-    comments  Comment[] @relation("CommentAuthor")
-    Like       Like[]
-    review   Review[]  @relation("ReviewAuthor")
-
+  id         String    @id @default(uuid())
+  firstName  String
+  lastName   String?
+  email      String?
+  password   String?
+  googleId   String?   @unique
+  githubId   String?   @unique
+  authMethod String
+  createdAt  DateTime  @default(now())
+  isAdmin    Boolean   @default(false)
+  posts      Post[]    @relation("PostAuthor")
+  comments   Comment[]
+  likes      Like[]
+  reviews    Review[]
+  movies     Movie[]
+  books      Book[]
+  games      Game[]
 }
 
 model Post {
-    id        String   @id @default(uuid())
-    title     String
-    author    User     @relation("PostOwner", fields: [authorId], references: [id])
-    authorId  String
-    desc      String
-    image     String?  
-    createdAt DateTime @default(now())
-    comments  Comment[] @relation("PostComments")
-    Like       Like[]
-    review   Review[]  @relation("PostReview")
+  id        String    @id @default(uuid())
+  title     String
+  author    User      @relation("PostAuthor", fields: [authorId], references: [id])
+  authorId  String
+  desc      String
+  group     String
+  reviewName String
+  image     String?
+  createdAt DateTime  @default(now())
+  comments  Comment[] @relation("PostComments")
+  reviews   Review[]  @relation("PostReviews")
+  movies    Movie[]   @relation("PostMovies")
+  books     Book[]    @relation("PostBooks")
+  games     Game[]    @relation("PostGames")
+  likes     Like[]    @relation
+} 
 
+model Movie {
+  id        String    @id @default(uuid())
+  name     String
+  text      String
+  image     String?
+  group     String
+  rating    String
+  createdAt DateTime  @default(now())
+  post      Post      @relation("PostMovies", fields: [postId], references: [id])
+  postId    String
+  reviews   Review[]  @relation("MovieReviews")
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+}
+
+model Book {
+  id        String    @id @default(uuid())
+  name     String
+  text      String
+  image     String?
+  group     String
+  rating    String
+  createdAt DateTime  @default(now())
+  post      Post      @relation("PostBooks", fields: [postId], references: [id])
+  postId    String
+  reviews   Review[]  @relation("BookReviews")
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+}
+
+model Game {
+  id        String    @id @default(uuid())
+  name     String
+  text      String
+  image     String?
+  rating    String
+  group     String
+  createdAt DateTime  @default(now())
+  post      Post      @relation("PostGames", fields: [postId], references: [id])
+  postId    String
+  reviews   Review[]  @relation("GameReviews")
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
 }
 
 model Comment {
-    id        String   @id @default(uuid())
-    text      String
-    author    User     @relation("CommentAuthor", fields: [authorId], references: [id])
-    authorId  String
-    post      Post     @relation("PostComments", fields: [postId], references: [id])
-    postId    String
-    createdAt DateTime @default(now())
+  id        String   @id @default(uuid())
+  text      String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  post      Post     @relation("PostComments", fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime @default(now())
 }
-
 
 model Like {
   id        String   @id @default(uuid())
@@ -59,15 +109,18 @@ model Like {
   createdAt DateTime @default(now())
 }
 
-
 model Review {
-  id        String   @id @default(uuid())
-  name      String  
-  rating    Int     
-  author    User     @relation("ReviewAuthor", fields: [authorId], references: [id])
-  authorId  String
-  post      Post     @relation("PostReview", fields: [postId], references: [id])
-  postId    String 
-  createdAt DateTime @default(now())
-
+  id       String @id @default(uuid())
+  name     String
+  rating   String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+  post     Post   @relation("PostReviews", fields: [postId], references: [id])
+  postId   String
+  movie    Movie  @relation("MovieReviews", fields: [movieId], references: [id])
+  movieId  String
+  book     Book   @relation("BookReviews", fields: [bookId], references: [id])
+  bookId   String
+  game     Game   @relation("GameReviews", fields: [gameId], references: [id])
+  gameId   String
 }

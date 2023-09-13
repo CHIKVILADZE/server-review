@@ -52,6 +52,8 @@ export const addPost = async (req, res) => {
           title: req.body.title,
           authorId: decodedToken.id,
           desc: req.body.desc,
+          group: req.body.group,
+          reviewName: req.body.reviewName,
           image: req.file.filename,
         },
       });

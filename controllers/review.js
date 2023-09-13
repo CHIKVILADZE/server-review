@@ -15,6 +15,7 @@ export const addReview = async (req, res) => {
         data: {
           name: req.body.name,
           rating: req.body.rating,
+          group: 'movie',
           author: {
             connect: {
               id: user.id,
@@ -42,14 +43,11 @@ export const getAllReviews = async (req, res) => {
       where: {
         postId: req.query.postId,
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+
       select: {
         id: true,
         name: true,
         rating: true,
-        createdAt: true,
         post: {
           select: {
             id: true,
