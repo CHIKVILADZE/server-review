@@ -55,12 +55,12 @@ export const addPost = async (req, res) => {
           group: req.body.group,
           reviewName: req.body.reviewName,
           image: req.file.filename,
-          sumRating: req.body.sumRating,
         },
       });
 
       return res.status(200).json('Post has been created.');
     } catch (error) {
+      console.log(error);
       return res.status(500).json(error);
     }
   });

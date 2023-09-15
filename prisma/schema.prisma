@@ -36,7 +36,7 @@ model Post {
   group     String
   reviewName String
   image     String?
-  sumRating String
+  sumRating String?   @default("0")
   createdAt DateTime  @default(now())
   comments  Comment[] @relation("PostComments")
   reviews   Review[]  @relation("PostReviews")

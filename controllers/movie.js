@@ -8,6 +8,9 @@ export const getMovies = async (req, res) => {
     include: {
       author: true,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
   res.json(allMovies);
 };
