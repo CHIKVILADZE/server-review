@@ -17,6 +17,7 @@ import dotenv from 'dotenv';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
 import passportSetup from './passport-setup.js';
+import { getTopRatedPosts } from './controllers/post.js';
 
 dotenv.config();
 const app = express();
@@ -55,6 +56,8 @@ app.use('/auth', googleAuthRoutes);
 app.use('/api/movies', movieRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/games', gameRoutes);
+
+app.get('/api/top-posts', getTopRatedPosts);
 
 app.listen(4000, () => {
   console.log('Server is listening on port 4000');

@@ -55,6 +55,7 @@ export const addPost = async (req, res) => {
           group: req.body.group,
           reviewName: req.body.reviewName,
           image: req.file.filename,
+          sumRating: req.body.sumRating,
         },
       });
 
@@ -63,4 +64,37 @@ export const addPost = async (req, res) => {
       return res.status(500).json(error);
     }
   });
+};
+
+export const getTopRatedPosts = async (req, res) => {
+  try {
+    const topRatedPosts = await prisma.post.findMany({
+      orderBy: {
+        sumRating: 'desc',
+      },
+      take: 8,
+    });
+
+    res.json(topRatedPosts);
+  } catch (error) {
+    console.error('Error fetching top-rated posts:', error);
+    res.status(500).json(error);
+  }
+};
+
+export const updatePost = async (req, res) => {
+  const { sumRating } = req.body;
+  const postId = req.params.id;
+
+  try {
+    const updatedPost = await prisma.post.update({
+      where: { id: postId },
+      data: { sumRating: sumRating },
+    });
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error('Error updating post sumRating:', error);
+    res.status(500).json(error);
+  }
 };
