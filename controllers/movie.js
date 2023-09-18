@@ -58,7 +58,11 @@ export const addMovie = async (req, res) => {
           group: 'movie',
           author: {
             connect: {
-              id: decodedToken.id,
+              id: req.body.userId,
+              firstName: req.body.firstName,
+              lastName: req.body.lastName,
+              googleId: req.body.googleId,
+              githubId: req.body.githubId,
             },
           },
           post: {

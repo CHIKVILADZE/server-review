@@ -3,6 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { PrismaClient } from '@prisma/client';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -37,26 +38,34 @@ passport.use(
     },
 
     async (accessToken, refreshToken, profile, done) => {
+      profile.accessToken = accessToken;
       const user = await prisma.user.findFirst({
         where: {
           googleId: profile.id,
         },
       });
+      console.log('userrrrr', user);
 
       if (user) {
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
         return done(null, user);
       }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync('google-auth-password', salt);
 
       const newUser = await prisma.user.create({
         data: {
           googleId: profile.id,
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
-          email: 'google-email',
-          password: 'google-auth',
+          email: profile.email,
+          password: hashedPassword,
           authMethod: 'google',
         },
       });
+      console.log('newUSerrr', newUser);
+
       const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET);
       return done(null, newUser, token);
     }

@@ -1,17 +1,26 @@
 import express from 'express';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
 import passport from 'passport';
 
 router.get('/login/success', (req, res) => {
+  const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET);
+
   if (req.user) {
     res.status(200).json({
       success: true,
-      message: 'successfull',
-      user: req.user,
+      message: 'success',
+      token: token,
       cookies: req.cookies,
+      user: {
+        id: req.user.id,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+      },
     });
+    console.log('req.user123:', req.user);
   }
 });
 
@@ -27,8 +36,6 @@ router.get('/logout', (req, res) => {
   res.redirect('http://localhost:3000/login');
 });
 
-router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
-
 router.get(
   '/google/callback',
   passport.authenticate('google', {
@@ -37,7 +44,7 @@ router.get(
   })
 );
 
-router.get('/github', passport.authenticate('github', { scope: ['profile'] }));
+router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
 
 router.get(
   '/github/callback',
@@ -46,5 +53,6 @@ router.get(
     failureRedirect: '/auth/login/failed',
   })
 );
+router.get('/github', passport.authenticate('github', { scope: ['profile'] }));
 
 export default router;

@@ -2,7 +2,6 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 import userRoutes from './routes/users.js';
 import postRoutes from './routes/posts.js';
 import commentRoutes from './routes/comments.js';
@@ -16,12 +15,15 @@ import reviewRoutes from './routes/reviews.js';
 import dotenv from 'dotenv';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
-import passportSetup from './passport-setup.js';
+import passportSetup from './controllers/passport-setup.js';
 import { getTopRatedPosts } from './controllers/post.js';
+
+const prisma = new PrismaClient();
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+
 app.use(cookieParser());
 app.use(
   cors({
@@ -30,21 +32,22 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.static('public'));
 
 app.use(
-  session({
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
+  cookieSession({
+    name: 'session',
+    keys: [process.env.SECRET_KEY],
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-const prisma = new PrismaClient();
 
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);

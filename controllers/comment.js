@@ -21,11 +21,13 @@ export const getComments = async (req, res) => {
         author: {
           select: {
             id: true,
-            // profilePic: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },
     });
+    console.log('GetComments', comments);
 
     return res.status(200).json(comments);
   } catch (error) {
@@ -49,6 +51,8 @@ export const getCommentById = async (req, res) => {
         postId: true,
         author: {
           select: {
+            firstName: true,
+            lastName: true,
             id: true,
             // profilePic: true,
           },
@@ -69,10 +73,14 @@ export const getCommentById = async (req, res) => {
 
 export const addComment = async (req, res) => {
   const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json('Not logged in!');
 
-  jwt.verify(token, 'secretkey', async (err, user) => {
-    if (err) return res.status(403).json('Token is not valid!');
+  jwt.verify(token, 'secretkey', async (err, decodedToken) => {
+    if (err) {
+      console.error('JWT Verification Error:', err);
+      return res.status(403).json('Token is not valid!');
+    }
+
+    // console.log('Decoded JWT User:', user);
 
     try {
       const newComment = await prisma.comment.create({
@@ -80,7 +88,9 @@ export const addComment = async (req, res) => {
           text: req.body.text,
           author: {
             connect: {
-              id: user.id,
+              id: req.body.userId,
+              firstName: req.body.firstName,
+              lastName: req.body.lastName,
             },
           },
           post: {
@@ -90,7 +100,7 @@ export const addComment = async (req, res) => {
           },
         },
       });
-
+      console.log('AddComments', newComment);
       return res.status(200).json('Comment has been created.');
     } catch (error) {
       console.error(error);
