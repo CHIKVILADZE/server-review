@@ -11,6 +11,7 @@ export const getAllUsers = async (req, res) => {
         firstName: true,
         lastName: true,
         email: true,
+        isAdmin: true,
       },
     });
 
@@ -31,7 +32,6 @@ export const getUser = async (req, res) => {
         firstName: true,
         lastName: true,
         email: true,
-        password: true,
         isAdmin: true,
         googleId: true,
         githubId: true,
@@ -65,7 +65,7 @@ export const addUser = async (req, res) => {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
-        password: req.body.password,
+        isAdmin: req.body.isAdmin,
       },
     });
 
@@ -83,17 +83,15 @@ export const updateUser = async (req, res) => {
   jwt.verify(token, 'secretkey', async (err, userInfo) => {
     if (err) return res.status(403).json('Token is not valid!');
 
-    const userId = user.id;
+    const userId = userInfo.id;
 
     try {
+      const { isAdmin } = req.body;
+
       const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
-          name: req.body.name,
-          city: req.body.city,
-          website: req.body.website,
-          profilePic: req.body.profilePic,
-          coverPic: req.body.coverPic,
+          isAdmin,
         },
       });
 
@@ -117,10 +115,6 @@ export const deleteUser = async (req, res) => {
   jwt.verify(token, 'secretkey', async (err, userInfo) => {
     if (err) {
       return res.status(403).json('Token is not valid!');
-    }
-
-    if (userInfo.id !== userId) {
-      return res.status(403).json('You can only delete your own profile.');
     }
 
     try {
