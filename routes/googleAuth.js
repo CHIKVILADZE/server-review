@@ -19,6 +19,7 @@ router.get('/login/success', (req, res) => {
         firstName: req.user.firstName,
         lastName: req.user.lastName,
         isAdmin: req.user.isAdmin,
+        isBlocked: req.user.isBlocked,
       },
     });
     console.log('req.user123:', req.user);

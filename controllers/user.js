@@ -104,6 +104,44 @@ export const updateUser = async (req, res) => {
   });
 };
 
+export const blockUser = async (req, res) => {
+  const token = req.cookies.accessToken;
+  const userId = req.params.userId;
+
+  if (!token) {
+    return res.status(401).json('Not authenticated!');
+  }
+
+  jwt.verify(token, 'secretkey', async (err, userInfo) => {
+    if (err) {
+      return res.status(403).json('Token is not valid!');
+    }
+
+    try {
+      const { isBlocked } = req.body;
+
+      console.log('User ID:', userId);
+      console.log('New Block Status:', isBlocked);
+
+      const blockedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          isBlocked: isBlocked,
+        },
+      });
+
+      console.log('Blocked User:', blockedUser);
+
+      if (blockedUser) return res.json(blockedUser);
+
+      return res.json('User has blocked.');
+    } catch (error) {
+      console.error('Error:', error);
+      return res.status(500).json('An error occurred while blocking the user.');
+    }
+  });
+};
+
 export const deleteUser = async (req, res) => {
   const userId = req.params.userId;
   const token = req.cookies.accessToken;

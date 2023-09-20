@@ -15,10 +15,10 @@ export const getLikes = async (req, res) => {
       },
     });
 
-    const userIds = likes.map((like) => like.userId);
-    const likeIds = likes.map((like) => like.id);
+    // const userIds = likes.map((like) => like.userId);
+    // const likeIds = likes.map((like) => like.id);
 
-    return res.status(200).json({ postId: req.query.postId, userIds, likeIds });
+    return res.status(200).json(likes);
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
@@ -50,19 +50,20 @@ export const addLike = async (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json('Not logged in!');
 
-  jwt.verify(token, 'secretkey', async (err, userInfo) => {
+  jwt.verify(token, 'secretkey', async (err, userId) => {
     if (err) return res.status(403).json('Token is not valid!');
-
+    console.log('UUSERR', req.body.userId);
+    console.log('PostId', req.body.postId);
     try {
       const newLike = await prisma.like.create({
         data: {
-          user: userInfo.id,
+          user: req.body.userId,
           post: req.body.postId,
           post: {
             connect: { id: req.body.postId },
           },
           user: {
-            connect: { id: userInfo.id },
+            connect: { id: req.body.userId },
           },
         },
       });

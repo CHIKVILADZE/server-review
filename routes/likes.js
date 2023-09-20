@@ -9,8 +9,8 @@ import {
 const router = express.Router();
 
 router.get('/', getLikes);
-router.get('/', getLikeById);
+router.get('/:id', getLikeById);
 router.post('/', addLike);
-router.delete('/', deleteLike);
+router.delete('/:id', deleteLike);
 
 export default router;
