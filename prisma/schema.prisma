@@ -18,6 +18,7 @@ model User {
   authMethod String
   createdAt  DateTime  @default(now())
   isAdmin    Boolean   @default(false)
+  isBlocked  Boolean   @default(false)
   posts      Post[]    @relation("PostAuthor")
   comments   Comment[]
   likes      Like[]
@@ -54,7 +55,7 @@ model Movie {
   group     String
   rating    String
   createdAt DateTime  @default(now())
-  post      Post      @relation("PostMovies", fields: [postId], references: [id])
+  post      Post      @relation("PostMovies", fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   reviews   Review[]  @relation("MovieReviews")
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -69,7 +70,7 @@ model Book {
   group     String
   rating    String
   createdAt DateTime  @default(now())
-  post      Post      @relation("PostBooks", fields: [postId], references: [id])
+  post      Post      @relation("PostBooks", fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   reviews   Review[]  @relation("BookReviews")
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -84,7 +85,7 @@ model Game {
   rating    String
   group     String
   createdAt DateTime  @default(now())
-  post      Post      @relation("PostGames", fields: [postId], references: [id])
+  post      Post      @relation("PostGames", fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   reviews   Review[]  @relation("GameReviews")
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -96,14 +97,14 @@ model Comment {
   text      String
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
-  post      Post     @relation("PostComments", fields: [postId], references: [id])
+  post      Post     @relation("PostComments", fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   createdAt DateTime @default(now())
 }
 
 model Like {
   id        String   @id @default(uuid())
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String

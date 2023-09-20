@@ -78,12 +78,12 @@ export const addUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const token = req.cookies.accessToken;
+  const userId = req.params.userId;
+
   if (!token) return res.status(401).json('Not authenticated!');
 
-  jwt.verify(token, 'secretkey', async (err, userInfo) => {
+  jwt.verify(token, 'secretkey', async (err, user) => {
     if (err) return res.status(403).json('Token is not valid!');
-
-    const userId = userInfo.id;
 
     try {
       const { isAdmin } = req.body;
@@ -91,11 +91,11 @@ export const updateUser = async (req, res) => {
       const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
-          isAdmin,
+          isAdmin: isAdmin,
         },
       });
-
-      if (updatedUser) return res.json('Updated!');
+      console.log('Updating user:', userId, 'isAdmin:');
+      if (updatedUser) return res.json(updatedUser);
       return res.status(403).json('You can update only your profile!');
     } catch (error) {
       console.error(error);

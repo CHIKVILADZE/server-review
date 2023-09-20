@@ -18,6 +18,7 @@ router.get('/login/success', (req, res) => {
         id: req.user.id,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
+        isAdmin: req.user.isAdmin,
       },
     });
     console.log('req.user123:', req.user);
