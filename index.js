@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
@@ -12,7 +14,7 @@ import bookRoutes from './routes/books.js';
 import gameRoutes from './routes/games.js';
 import googleAuthRoutes from './routes/googleAuth.js';
 import reviewRoutes from './routes/reviews.js';
-import dotenv from 'dotenv';
+
 import cookieSession from 'cookie-session';
 import passport from 'passport';
 import passportSetup from './controllers/passport-setup.js';
@@ -20,7 +22,6 @@ import { getTopRatedPosts } from './controllers/post.js';
 
 const prisma = new PrismaClient();
 
-dotenv.config();
 const app = express();
 app.use(express.json());
 
