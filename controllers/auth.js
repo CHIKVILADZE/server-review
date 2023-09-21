@@ -72,7 +72,7 @@ export const login = async (req, res) => {
       .send(others);
   } catch (error) {
     console.error(error);
-    res.status(500).send('An error occurred while logging in.');
+    res.status(500).send(error.message);
   }
 };
 
