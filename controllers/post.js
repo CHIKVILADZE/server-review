@@ -37,44 +37,38 @@ export const getPostById = async (req, res) => {
 };
 
 export const addPost = async (req, res) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json(error.message, req.cookies);
-  console.log('req.cookies.accessToken', req.cookies);
+  if (!req.session.user) {
+    return res.status(401).json('Not authenticated');
+  }
 
-  jwt.verify(token, 'secretkey', async (err, decodedToken) => {
-    if (err) {
-      console.error('Token verification error:', err);
-      return res.status(403).json('Token is not valid!');
-    }
+  try {
+    const newPost = await prisma.post.create({
+      data: {
+        title: req.body.title,
+        authorId: req.session.user.id,
+        authorId: decodedToken.id,
+        desc: req.body.desc,
+        group: req.body.group,
+        reviewName: req.body.reviewName,
+        image: req.file.filename,
 
-    try {
-      const newPost = await prisma.post.create({
-        data: {
-          title: req.body.title,
-          authorId: decodedToken.id,
-          desc: req.body.desc,
-          group: req.body.group,
-          reviewName: req.body.reviewName,
-          image: req.file.filename,
-
-          author: {
-            connect: {
-              id: req.body.userId,
-              firstName: req.body.firstName,
-              lastName: req.body.lastName,
-              googleId: req.body.googleId,
-              githubId: req.body.githubId,
-            },
+        author: {
+          connect: {
+            id: req.body.userId,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            googleId: req.body.googleId,
+            githubId: req.body.githubId,
           },
         },
-      });
-      console.log('newPost', newPost);
-      return res.status(200).json('Post has been created.');
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(error);
-    }
-  });
+      },
+    });
+
+    return res.status(200).json('Post has been created.');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
 };
 
 export const getTopRatedPosts = async (req, res) => {
