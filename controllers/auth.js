@@ -60,16 +60,15 @@ export const login = async (req, res) => {
       return res.status(401).send('Invalid email or password.');
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+    });
 
     const { password: _, ...others } = user;
 
-    res
-      .cookie('accessToken', token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .send(others);
+    res.status(200).json(others);
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
