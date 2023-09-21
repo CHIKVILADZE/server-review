@@ -32,9 +32,6 @@ app.use(
     credentials: true,
   })
 );
-
-app.use(express.static('public'));
-
 app.use(
   cookieSession({
     name: 'session',
@@ -44,6 +41,8 @@ app.use(
     sameSite: 'strict',
   })
 );
+
+app.use(express.static('public'));
 
 app.use(passport.initialize());
 app.use(passport.session());
