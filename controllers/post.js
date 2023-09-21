@@ -39,6 +39,7 @@ export const getPostById = async (req, res) => {
 export const addPost = async (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json('Not logged in!');
+  console.log('req.cookies.accessToken', req.cookies);
 
   jwt.verify(token, 'secretkey', async (err, decodedToken) => {
     if (err) {
