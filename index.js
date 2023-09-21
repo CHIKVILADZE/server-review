@@ -28,7 +28,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: 'https://client-review-seven.vercel.app',
-    methods: 'GET, POST, PUT, DELETE',
+    methods: ['GET, POST, PUT, DELETE'],
     credentials: true,
   })
 );

@@ -32,7 +32,7 @@ export const register = async (req, res) => {
         authMethod: authMethod,
       },
     });
-
+    console.log(newUser);
     res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
