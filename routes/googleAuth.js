@@ -35,7 +35,7 @@ router.get('/login/failed', (req, res) => {
 
 router.get('/logout', (req, res) => {
   req.logout(function () {});
-  res.redirect('http://localhost:3000/login');
+  res.redirect('https://client-review-seven.vercel.app/login');
 });
 
 router.get(
