@@ -60,7 +60,7 @@ export const login = async (req, res) => {
       return res.status(401).send('Invalid email or password.');
     }
 
-    jwt.sign(
+    const accessToken = jwt.sign(
       { id: user.id },
       'secretKey',
       { expiresIn: '10' },
@@ -71,7 +71,7 @@ export const login = async (req, res) => {
 
     const { password: _, ...others } = user;
 
-    res.status(200).json(others);
+    res.status(200).json(others, accessToken);
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
