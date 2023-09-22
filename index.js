@@ -33,14 +33,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(
-  cookieSession({
-    name: 'session',
-    keys: [process.env.SECRET_KEY],
-    maxAge: 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  })
-);
 
 app.use(express.static('public'));
 
