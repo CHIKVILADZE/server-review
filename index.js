@@ -45,11 +45,11 @@ app.use(
   })
 );
 
-const root = path.join(_dirname, 'build');
+const root = path.join(__dirname, 'build');
 app.use(express.static(root));
 
 app.use('/*', (req, res) => {
-  res.sendFile(path.join(_dirnname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirnname, 'build', 'index.html'));
 });
 
 app.use(express.static('public'));
