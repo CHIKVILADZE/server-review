@@ -6,13 +6,14 @@ const router = express.Router();
 import passport from 'passport';
 
 router.get('/login/success', (req, res) => {
-  const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET);
+  const token = jwt.sign({ id: req.user.id });
+  ('secretkey');
 
   if (req.user) {
     res.status(200).json({
       success: true,
       message: 'success',
-      token: token,
+      // token: token,
       cookies: req.cookies,
       user: {
         id: req.user.id,
