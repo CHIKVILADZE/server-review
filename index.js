@@ -45,7 +45,7 @@ app.use(
   })
 );
 
-const root = path.join(__dirname, 'build');
+const root = path.join(_dirname, 'build');
 app.use(express.static(root));
 
 app.use('/*', (req, res) => {
