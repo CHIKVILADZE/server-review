@@ -25,12 +25,22 @@ const prisma = new PrismaClient();
 const app = express();
 app.use(express.json());
 
-app.use(cookieParser());
 app.use(
   cors({
-    origin: 'https://client-review-seven.vercel.app/',
+    origin: 'https://client-review-seven.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
+  })
+);
+
+app.use(cookieParser());
+
+app.use(
+  cookieSession({
+    name: 'session',
+    keys: [process.env.JWT_SECRET_KEY],
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
   })
 );
 
