@@ -40,35 +40,37 @@ export const addPost = async (req, res) => {
   jwt.verify(token, 'secretkey', async (err, decodedToken) => {
     if (err) {
       console.error('Token verification error:', err);
-      return res.status(403).json('Token is not valid!');
-    }
+      return res.status(403).json({ error: err.message });
+    } else {
+      try {
+        const newPost = await prisma.post.create({
+          data: {
+            title: req.body.title,
+            authorId: decodedToken.id,
+            desc: req.body.desc,
+            group: req.body.group,
+            reviewName: req.body.reviewName,
+            image: req.file.filename,
 
-    try {
-      const newPost = await prisma.post.create({
-        data: {
-          title: req.body.title,
-          authorId: decodedToken.id,
-          desc: req.body.desc,
-          group: req.body.group,
-          reviewName: req.body.reviewName,
-          image: req.file.filename,
-
-          author: {
-            connect: {
-              id: req.body.userId,
-              firstName: req.body.firstName,
-              lastName: req.body.lastName,
-              googleId: req.body.googleId,
-              githubId: req.body.githubId,
+            author: {
+              connect: {
+                id: req.body.userId,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                googleId: req.body.googleId,
+                githubId: req.body.githubId,
+              },
             },
           },
-        },
-      });
-      console.log('newPost', newPost);
-      return res.status(200).json('Post has been created.');
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(error);
+        });
+        console.log('newPost', newPost);
+        return res
+          .status(200)
+          .json({ message: 'Post has been created successfully.' });
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+      }
     }
   });
 };
