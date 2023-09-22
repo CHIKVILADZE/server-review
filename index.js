@@ -44,6 +44,13 @@ app.use(
   })
 );
 
+const root = require('path').join(__dirname, 'build');
+app.use(express.static(root));
+
+app.use('/*', (req, res) => {
+  res.sendFile(path.join(_dirnname, 'build', 'index.html'));
+});
+
 app.use(express.static('public'));
 
 app.use(passport.initialize());
