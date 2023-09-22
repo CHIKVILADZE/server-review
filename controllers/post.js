@@ -37,7 +37,7 @@ export const getPostById = async (req, res) => {
 };
 
 export const addPost = async (req, res) => {
-  jwt.verify(token, 'secretkey', async (err, decodedToken) => {
+  jwt.verify(token, 'secretkey', async (err, user) => {
     if (err) {
       console.error('Token verification error:', err);
       return res.status(403).json({ error: err.message });
@@ -46,7 +46,7 @@ export const addPost = async (req, res) => {
         const newPost = await prisma.post.create({
           data: {
             title: req.body.title,
-            authorId: decodedToken.id,
+            authorId: user.id,
             desc: req.body.desc,
             group: req.body.group,
             reviewName: req.body.reviewName,
