@@ -14,6 +14,7 @@ import bookRoutes from './routes/books.js';
 import gameRoutes from './routes/games.js';
 import googleAuthRoutes from './routes/googleAuth.js';
 import reviewRoutes from './routes/reviews.js';
+import path from 'path';
 
 import cookieSession from 'cookie-session';
 import passport from 'passport';
@@ -44,7 +45,7 @@ app.use(
   })
 );
 
-const root = require('path').join(__dirname, 'build');
+const root = path.join(__dirname, 'build');
 app.use(express.static(root));
 
 app.use('/*', (req, res) => {
