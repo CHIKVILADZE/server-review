@@ -43,19 +43,6 @@ app.use(
   })
 );
 
-const sequelize = new Sequelize('database Name', 'username', 'password', {
-  host: 'host',
-  dialect: 'mysql',
-  dialectOptions: {
-    ssl: {
-      rejectUnauthorized: true,
-    },
-  },
-  define: {
-    timestamps: false,
-  },
-});
-
 app.use(express.static('public'));
 
 app.use(passport.initialize());
