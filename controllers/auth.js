@@ -60,20 +60,60 @@ export const login = async (req, res) => {
       return res.status(401).send('Unauthorized');
     }
 
-    const accessToken = jwt.sign(
-      { id: user.id },
-      'secretKey',
-      { expiresIn: '10' },
-      (err, token) => {
-        res.json({ token: token });
-      }
-    );
+    if (user) {
+      const accessToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_SECRET_KEY,
+        {
+          expiresIn: 300,
+        }
+      );
+      const { password: _, ...others } = user;
 
-    const { password: _, ...others } = user;
-
-    res.status(200).json(others);
+      console.log('tokeeen', accessToken, others);
+      return res.json({ Login: true, token: accessToken, others });
+    } else {
+      return res.json('Authentication failed!');
+    }
   } catch (error) {
     res.status(500).send(error);
+  }
+};
+
+export const checkAuth = async (req, res) => {
+  const token = req.headers['access-token']; // Get the token from headers
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token not provided' });
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decodedToken.id,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        password: true,
+        authMethod: true,
+        isAdmin: true,
+        isBlock: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error('JWT Verification Error:', error);
+    return res.status(403).json({ error: 'Token is not valid' });
   }
 };
 

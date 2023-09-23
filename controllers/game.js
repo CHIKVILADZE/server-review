@@ -38,7 +38,7 @@ export const getGameById = async (req, res) => {
 
 export const addGame = async (req, res) => {
   const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json('Not logged in!');
+  if (!token) return res.status(401).json('Token is not valid!');
 
   jwt.verify(token, 'secretkey', async (err, decodedToken) => {
     if (err) {

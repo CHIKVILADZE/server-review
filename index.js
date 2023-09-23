@@ -50,18 +50,34 @@ app.use(express.static('public'));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/users', userRoutes);
-app.use('/api/posts', postRoutes);
-app.use('/api/comments', commentRoutes);
-app.use('/api/likes', likeRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/auth', googleAuthRoutes);
-app.use('/api/movies', movieRoutes);
-app.use('/api/books', bookRoutes);
-app.use('/api/games', gameRoutes);
+const verifyToken = (req, res, next) => {
+  const token = req.headers['access-token'];
+  if (!token) {
+    return res.json('You need token, please provide it');
+  } else {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+      if (err) {
+        return res.json('Not Authenticated');
+      } else {
+        req.userId = decoded.id;
+        next();
+      }
+    });
+  }
+};
 
-app.get('/api/top-posts', getTopRatedPosts);
+app.use('/api/users', verifyToken, userRoutes);
+app.use('/api/posts', verifyToken, postRoutes);
+app.use('/api/comments', verifyToken, commentRoutes);
+app.use('/api/likes', verifyToken, likeRoutes);
+app.use('/api/auth', verifyToken, authRoutes);
+app.use('/api/reviews', verifyToken, reviewRoutes);
+app.use('/auth', verifyToken, googleAuthRoutes);
+app.use('/api/movies', verifyToken, movieRoutes);
+app.use('/api/books', verifyToken, bookRoutes);
+app.use('/api/games', verifyToken, gameRoutes);
+
+app.get('/api/top-posts', verifyToken, getTopRatedPosts);
 
 app.listen(4000, () => {
   console.log('Server is listening  port 4000');

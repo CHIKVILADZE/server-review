@@ -13,12 +13,13 @@ router.get('/login/success', (req, res) => {
     res.status(200).json({
       success: true,
       message: 'success',
-      // token: token,
+      token: token,
       cookies: req.cookies,
       user: {
         id: req.user.id,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
+        email: req.user.email,
         isAdmin: req.user.isAdmin,
         isBlocked: req.user.isBlocked,
       },
