@@ -38,9 +38,10 @@ app.use(cookieParser());
 app.use(
   cookieSession({
     name: 'session',
-    keys: [process.env.JWT_SECRET_KEY],
+    keys: [process.env.SECRET_KEY],
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
+    secure: 'strict',
   })
 );
 
