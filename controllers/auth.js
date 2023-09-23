@@ -71,10 +71,9 @@ export const login = async (req, res) => {
 
     const { password: _, ...others } = user;
 
-    res.status(200).json(others, accessToken);
+    res.status(200).json(others);
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error in login');
+    res.status(500).send(error);
   }
 };
 
