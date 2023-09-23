@@ -57,7 +57,7 @@ export const login = async (req, res) => {
     const passwordMatch = bcrypt.compareSync(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).send('Invalid email or password.');
+      return res.status(401).send('Unauthorized');
     }
 
     const accessToken = jwt.sign(
