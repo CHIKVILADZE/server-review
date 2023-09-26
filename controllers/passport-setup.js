@@ -47,7 +47,7 @@ passport.use(
       console.log('userrrrr', user);
 
       if (user) {
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY);
         return done(null, user);
       }
 
@@ -66,7 +66,7 @@ passport.use(
       });
       console.log('newUSerrr', newUser);
 
-      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET_KEY);
       return done(null, newUser, token);
     }
   )
@@ -80,8 +80,9 @@ passport.use(
       callbackURL: '/auth/github/callback',
       scope: ['profile'],
     },
-
     async (accessToken, refreshToken, profile, done) => {
+      console.log('aceessssToken', accessToken);
+
       const user = await prisma.user.findFirst({
         where: {
           githubId: profile.id,
@@ -89,21 +90,22 @@ passport.use(
       });
 
       if (user) {
-        return done(null, user);
+        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY);
+        return done(null, user, { accessToken: token });
       }
 
+      console.log('userrrrr', user);
       const newUser = await prisma.user.create({
         data: {
           githubId: profile.id,
           firstName: profile.username,
-
-          email: 'github-email',
-          password: 'github-auth',
           authMethod: 'github',
         },
       });
-      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET);
-      return done(null, newUser, token);
+
+      const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET_KEY);
+      console.log('aceessssToken', accessToken);
+      return done(null, newUser, { accessToken: token });
     }
   )
 );

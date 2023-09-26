@@ -37,10 +37,15 @@ export const getGameById = async (req, res) => {
 };
 
 export const addGame = async (req, res) => {
-  const token = req.cookies.accessToken;
-  if (!token) return res.status(401).json('Token is not valid!');
+  const authHeader = req.headers['authorization'];
 
-  jwt.verify(token, 'secretkey', async (err, decodedToken) => {
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Authorization header missing' });
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+
+  jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, decodedToken) => {
     if (err) {
       console.error('Token verification error:', err);
       return res.status(403).json('Token is not valid!');

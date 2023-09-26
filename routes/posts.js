@@ -4,7 +4,7 @@ import {
   getPostById,
   addPost,
   updatePost,
-  getTopRatedPosts,
+  deletePost,
 } from '../controllers/post.js';
 import multer from 'multer';
 import path from 'path';
@@ -33,6 +33,7 @@ const upload = multer({ storage });
 router.get('/', getPosts);
 router.get('/:id', getPostById);
 router.put('/:id', updatePost);
+router.delete('/:id', deletePost);
 router.post('/', upload.single('image'), addPost);
 
 export default router;

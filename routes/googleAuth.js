@@ -6,20 +6,18 @@ const router = express.Router();
 import passport from 'passport';
 
 router.get('/login/success', (req, res) => {
-  const token = jwt.sign({ id: req.user.id });
-  ('secretkey');
+  const accessToken = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET_KEY);
 
   if (req.user) {
     res.status(200).json({
       success: true,
       message: 'success',
-      token: token,
+      accessToken: accessToken,
       cookies: req.cookies,
       user: {
         id: req.user.id,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
-        email: req.user.email,
         isAdmin: req.user.isAdmin,
         isBlocked: req.user.isBlocked,
       },
@@ -37,7 +35,7 @@ router.get('/login/failed', (req, res) => {
 
 router.get('/logout', (req, res) => {
   req.logout(function () {});
-  res.redirect('https://client-review-seven.vercel.app/login');
+  res.redirect('http://localhost:3000/login');
 });
 
 router.get(
@@ -49,6 +47,8 @@ router.get(
 );
 
 router.get('/google', passport.authenticate('google', { scope: ['profile'] }));
+
+router.get('/github', passport.authenticate('github', { scope: ['profile'] }));
 
 router.get(
   '/github/callback',

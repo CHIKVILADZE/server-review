@@ -27,7 +27,6 @@ export const getComments = async (req, res) => {
         },
       },
     });
-    console.log('GetComments', comments);
 
     return res.status(200).json(comments);
   } catch (error) {
@@ -72,41 +71,37 @@ export const getCommentById = async (req, res) => {
 };
 
 export const addComment = async (req, res) => {
-  const token = req.cookies.accessToken;
+  const authHeader = req.headers['authorization'];
 
-  jwt.verify(token, 'secretkey', async (err, decodedToken) => {
-    if (err) {
-      console.error('JWT Verification Error:', err);
-      return res.status(403).json('Token is not valid!');
-    }
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Authorization header missing' });
+  }
 
-    // console.log('Decoded JWT User:', user);
+  const token = authHeader.replace('Bearer ', '');
 
-    try {
-      const newComment = await prisma.comment.create({
-        data: {
-          text: req.body.text,
-          author: {
-            connect: {
-              id: req.body.userId,
-              firstName: req.body.firstName,
-              lastName: req.body.lastName,
-            },
-          },
-          post: {
-            connect: {
-              id: req.body.postId,
-            },
+  try {
+    const newComment = await prisma.comment.create({
+      data: {
+        text: req.body.text,
+        author: {
+          connect: {
+            id: req.body.userId,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
           },
         },
-      });
-      console.log('AddComments', newComment);
-      return res.status(200).json('Comment has been created.');
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json(error);
-    }
-  });
+        post: {
+          connect: {
+            id: req.body.postId,
+          },
+        },
+      },
+    });
+    return res.status(200).json('Comment has been created.');
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json(error);
+  }
 };
 
 export const deleteComment = async (req, res) => {
