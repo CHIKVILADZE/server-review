@@ -63,7 +63,6 @@ export const getAllReviews = async (req, res) => {
         },
       },
     });
-    console.log('reviews', reviews);
     return res.status(200).json(reviews);
   } catch (error) {
     console.error(error);

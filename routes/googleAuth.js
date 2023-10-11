@@ -6,23 +6,27 @@ const router = express.Router();
 import passport from 'passport';
 
 router.get('/login/success', (req, res) => {
-  const accessToken = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET_KEY);
-
   if (req.user) {
+    const accessToken = jwt.sign(
+      { id: req.user.id },
+      process.env.JWT_SECRET_KEY
+    );
+    const userData = {
+      id: req.user.id,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      isAdmin: req.user.isAdmin,
+      isBlocked: req.user.isBlocked,
+    };
+
     res.status(200).json({
       success: true,
       message: 'success',
       accessToken: accessToken,
-      cookies: req.cookies,
-      user: {
-        id: req.user.id,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        isAdmin: req.user.isAdmin,
-        isBlocked: req.user.isBlocked,
-      },
+      user: userData,
     });
-    console.log('req.user123:', req.user);
+  } else {
+    res.status(401).json({ error: 'User not authenticated' });
   }
 });
 
@@ -35,7 +39,7 @@ router.get('/login/failed', (req, res) => {
 
 router.get('/logout', (req, res) => {
   req.logout(function () {});
-  res.redirect('http://localhost:3000/login');
+  res.redirect('https://client-review-seven.vercel.app/login');
 });
 
 router.get(

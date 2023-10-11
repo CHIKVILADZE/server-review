@@ -152,8 +152,6 @@ export const blockUser = async (req, res) => {
       },
     });
 
-    console.log('Blocked User:', blockedUser);
-
     if (blockedUser) return res.json(blockedUser);
 
     return res.json('User has blocked.');
@@ -172,7 +170,6 @@ export const deleteUser = async (req, res) => {
   }
 
   const token = authHeader.replace('Bearer ', '');
-  console.log('decodedToken.id', 'userIDD', userId, 'isADmin');
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY, {

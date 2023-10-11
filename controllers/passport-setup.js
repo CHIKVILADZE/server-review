@@ -44,7 +44,6 @@ passport.use(
           googleId: profile.id,
         },
       });
-      console.log('userrrrr', user);
 
       if (user) {
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY);
@@ -64,7 +63,6 @@ passport.use(
           authMethod: 'google',
         },
       });
-      console.log('newUSerrr', newUser);
 
       const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET_KEY);
       return done(null, newUser, token);
@@ -94,7 +92,6 @@ passport.use(
         return done(null, user, { accessToken: token });
       }
 
-      console.log('userrrrr', user);
       const newUser = await prisma.user.create({
         data: {
           githubId: profile.id,
@@ -104,7 +101,6 @@ passport.use(
       });
 
       const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET_KEY);
-      console.log('aceessssToken', accessToken);
       return done(null, newUser, { accessToken: token });
     }
   )

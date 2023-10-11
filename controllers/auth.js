@@ -32,7 +32,6 @@ export const register = async (req, res) => {
         authMethod: authMethod,
       },
     });
-    console.log(newUser);
     res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
@@ -65,57 +64,19 @@ export const login = async (req, res) => {
     }
 
     if (user) {
-      const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY);
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY);
       const { password: _, ...others } = user;
+      res.cookie('access_token', token, {
+        http: true,
+      });
 
-      return res.json({ Login: true, token: accessToken, others });
+      return res.json({ Login: true, token: token, others });
     } else {
       return res.json('Authentication failed!');
     }
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
-  }
-};
-
-export const checkAuth = async (req, res) => {
-  const authHeader = req.headers['authorization'];
-
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Authorization header missing' });
-  }
-
-  const token = authHeader.replace('Bearer ', '');
-
-  try {
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY, {
-      algorithms: ['HS256'],
-    });
-
-    const user = await prisma.user.findUnique({
-      where: {
-        id: decodedToken.id,
-      },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        authMethod: true,
-        isAdmin: true,
-        isBlocked: true,
-      },
-    });
-
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    return res.status(200).json(user);
-  } catch (error) {
-    console.error('JWT Verification Error:', error);
-
-    return res.status(403).json({ error: 'Token is not valid' });
   }
 };
 

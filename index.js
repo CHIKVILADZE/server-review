@@ -25,7 +25,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://client-review-seven.vercel.app'],
+    origin: ['https://client-review-seven.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })

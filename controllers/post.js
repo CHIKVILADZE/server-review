@@ -76,7 +76,6 @@ export const addPost = async (req, res) => {
       },
     });
 
-    console.log('newPost', newPost);
     return res
       .status(200)
       .json({ message: 'Post has been created successfully.' });
